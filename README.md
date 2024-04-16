@@ -1,20 +1,12 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# GPTClone
 
-## Getting Started
+## This is an application to replicate the Chat GPT behaviour.
 
-## This is an application to replicate the Chat GPT behaviour. This application consumes Open AI APIs
+## This application is build using NextJS. We are using Clerk based authentication.
+
+## For the UI components, we are using Daisy UI library.
 
 First, run the development server:
-
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
