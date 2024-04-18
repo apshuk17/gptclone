@@ -1,5 +1,9 @@
+import { UserProfile } from "@clerk/nextjs";
+
+UserProfile
+
 function ProfilePage() {
-    return <div>Chat Page</div>
+    return <UserProfile />
 }
 
 export default ProfilePage;

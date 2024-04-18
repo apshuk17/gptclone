@@ -1,5 +1,5 @@
 function ToursPage() {
-    return <div>Chat Page</div>
+    return <div>Tours Page</div>
 }
 
 export default ToursPage;
