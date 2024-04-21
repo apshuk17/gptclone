@@ -5,16 +5,38 @@ import { TourInfo } from "@/components/tours";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { getExistingTour, generateTourResponse, createNewTour, type TourType } from '@/utils/actions';
 import toast from "react-hot-toast";
+import { JsonArray } from "@prisma/client/runtime/library";
 
 
 function NewTour() {
 
+    const queryClient = useQueryClient()
+
     const { mutate, isPending, data: tour } = useMutation({
         mutationFn: async (destination: TourType) => {
+            // Check if this tour already exist
+            const existingTour = await getExistingTour(destination);
+
+            if (existingTour) {
+                return {
+                    city: existingTour.city,
+                    country: existingTour.country,
+                    title: existingTour.title,
+                    description: existingTour.description,
+                    stops: existingTour.stops as JsonArray,
+                }
+            };
+
             const newTour = await generateTourResponse(destination)
 
             if (newTour) {
-                return newTour;
+                // Add this new tour to database
+                await createNewTour(newTour.tour);
+
+                // Invalidate the existing query
+                queryClient.invalidateQueries({ queryKey: ['tours'] });
+                
+                return newTour.tour;
             }
 
             toast.error('No matching city found...');
@@ -59,7 +81,8 @@ function NewTour() {
                     </button>
                 </div>
             </form>
-            <div className='mt-16'>{tour && <TourInfo tour={tour.tour} />}</div>
+            {tour && <div className='mt-16'>{tour && <TourInfo tour={tour} />}</div>}
+
         </>
     )
 }

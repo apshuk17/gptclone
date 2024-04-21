@@ -1,7 +1,11 @@
-import { type TourResponseType } from "@/utils/actions";
+import { type TourResponseType, type TourDetailsType } from "@/utils/actions";
 
 
-function TourInfo({ tour }: TourResponseType) {
+type TourInfoProps = {
+    tour: TourDetailsType
+}
+
+function TourInfo({ tour }: TourInfoProps ) {
     const { title, description, stops } = tour;
     return (
         <div className='max-w-2xl'>
@@ -10,8 +14,8 @@ function TourInfo({ tour }: TourResponseType) {
             <ul>
                 {stops.map((stop) => {
                     return (
-                        <li key={stop} className='mb-4 bg-base-100 p-4 rounded-xl'>
-                            <p>{stop}</p>
+                        <li key={stop?.toString()} className='mb-4 bg-base-100 p-4 rounded-xl'>
+                            <p>{stop?.toString()}</p>
                         </li>
                     );
                 })}

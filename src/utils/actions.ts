@@ -1,5 +1,8 @@
 'use server';
 
+import prisma from "@/db";
+import { Tour } from "@prisma/client";
+import { JsonArray } from "@prisma/client/runtime/library";
 import OpenAI from "openai";
 import { type ChatCompletionMessage } from "openai/resources/index.mjs";
 
@@ -13,11 +16,16 @@ export type TourDetailsType = {
     country: string;
     title: string;
     description: string;
-    stops: string[];
+    stops: JsonArray;
 }
 
 export type TourResponseType = {
     tour: TourDetailsType
+}
+
+export type TourDBType = {
+    tour: TourDetailsType;
+    tokens?: number
 }
 
 const openAi = new OpenAI({
@@ -41,10 +49,6 @@ export const generateChatResponse = async (chatMessages: ChatCompletionMessage[]
         return null;
     }
 
-}
-
-export const getExistingTour = async ({ city, country }: TourType) => {
-    return null;
 }
 
 export const generateTourResponse = async ({ city, country }: TourType) => {
@@ -91,6 +95,22 @@ If you can't find info on exact ${city.toString()}, or ${city.toString()} does n
     }
 }
 
-export const createNewTour = async (tour: { [k: string]: FormDataEntryValue }) => {
-    return null;
+export const getExistingTour = async ({ city, country }: TourType) => {
+    // Find if this city & country combination already exists in the database
+    return prisma.tour.findUnique({
+        where: {
+            city_country: {
+                city: city.toString(),
+                country: country.toString()
+            }
+        }
+    });
+}
+
+export const createNewTour = async (tour: TourDetailsType) => {
+    return prisma.tour.create({
+        data: {
+            ...tour,
+        }
+    })
 }
