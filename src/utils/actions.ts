@@ -1,8 +1,7 @@
 'use server';
 
 import prisma from "@/db";
-import { Tour } from "@prisma/client";
-import { JsonArray } from "@prisma/client/runtime/library";
+import { Prisma } from "@prisma/client";
 import OpenAI from "openai";
 import { type ChatCompletionMessage } from "openai/resources/index.mjs";
 
@@ -16,7 +15,7 @@ export type TourDetailsType = {
     country: string;
     title: string;
     description: string;
-    stops: JsonArray;
+    stops: Prisma.JsonArray;
 }
 
 export type TourResponseType = {
@@ -113,4 +112,34 @@ export const createNewTour = async (tour: TourDetailsType) => {
             ...tour,
         }
     })
+}
+
+export const getAllTours = async (searchTerm?: string) => {
+    if (!searchTerm) {
+        // Find all the tours
+        const tours = await prisma.tour.findMany({
+            orderBy: {
+                city: 'asc'
+            }
+        })
+
+        return tours;
+    }
+
+    const tours = await prisma.tour.findMany({
+        where: {
+            OR: [
+                {
+                    city: {
+                        contains: searchTerm
+                    },
+                    country: {
+                        contains: searchTerm
+                    }
+                }
+            ]
+        }
+    })
+
+    return tours;
 }

@@ -1,12 +1,11 @@
 'use client';
 
 import { type FormEvent } from "react"
+import { Prisma } from "@prisma/client";
 import { TourInfo } from "@/components/tours";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { getExistingTour, generateTourResponse, createNewTour, type TourType } from '@/utils/actions';
 import toast from "react-hot-toast";
-import { JsonArray } from "@prisma/client/runtime/library";
-
 
 function NewTour() {
 
@@ -23,7 +22,7 @@ function NewTour() {
                     country: existingTour.country,
                     title: existingTour.title,
                     description: existingTour.description,
-                    stops: existingTour.stops as JsonArray,
+                    stops: existingTour.stops as Prisma.JsonArray,
                 }
             };
 
