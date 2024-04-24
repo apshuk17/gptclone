@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from "react";
-import { getAllTours } from "@/utils/actions";
+import { getAllTours } from "@/utils/actions/tour-actions";
 import { useQuery } from "@tanstack/react-query";
 import ToursList from './ToursList';
 

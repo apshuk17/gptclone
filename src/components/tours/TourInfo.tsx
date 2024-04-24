@@ -1,4 +1,4 @@
-import { type TourResponseType, type TourDetailsType } from "@/utils/actions";
+import { type TourResponseType, type TourDetailsType } from "@/utils/actions/tour-actions";
 
 
 type TourInfoProps = {

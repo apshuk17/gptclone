@@ -40,7 +40,8 @@ export const generateChatResponse = async (chatMessages: ChatCompletionMessage[]
                 ...chatMessages
             ],
             model: 'gpt-3.5-turbo',
-            temperature: 0
+            temperature: 0,
+            max_tokens: 50
         })
 
         return response.choices[0].message;
@@ -122,7 +123,6 @@ export const getAllTours = async (searchTerm?: string) => {
                 city: 'asc'
             }
         })
-
         return tours;
     }
 
@@ -152,4 +152,18 @@ export const getSingleTour = async (id: string) => {
             id
         }
     })
+}
+
+export const generateTourImage = async ({ city, country }: TourType) => {
+    try {
+        const tourImage = await openAi.images.generate({
+            prompt: `a panoramic view of the ${city.toString()}, ${country.toString()}`,
+            n: 1,
+            size: '512x512'
+        })
+
+        return tourImage?.data[0]?.url;
+    } catch(err) {
+        return null;
+    }
 }

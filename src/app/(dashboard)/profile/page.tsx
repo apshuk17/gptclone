@@ -1,9 +1,20 @@
-import { UserProfile } from "@clerk/nextjs";
+import { fetchUserTokensById } from "@/utils/actions/token-actions";
+import { UserProfile, auth } from "@clerk/nextjs";
 
-UserProfile
+async function ProfilePage() {
+    const { userId } = auth();
+    let currentTokens;
 
-function ProfilePage() {
-    return <UserProfile />
+    if (userId) currentTokens = await fetchUserTokensById(userId);
+
+    return (
+        <div>
+            <h2 className="mb-8 ml-8 text-xl font-extrabold">
+                Token Amount: {currentTokens}
+            </h2>
+            <UserProfile />
+        </div>
+    )
 }
 
 export default ProfilePage;

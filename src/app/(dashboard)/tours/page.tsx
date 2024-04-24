@@ -1,5 +1,5 @@
 import { ToursPage as ToursDetails } from "@/components/tours";
-import { getAllTours } from "@/utils/actions";
+import { getAllTours } from "@/utils/actions/tour-actions";
 import { dehydrate, HydrationBoundary, QueryClient } from '@tanstack/react-query';
 
 async function ToursPage() {

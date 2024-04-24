@@ -4,12 +4,15 @@ import { type FormEvent } from "react"
 import { Prisma } from "@prisma/client";
 import { TourInfo } from "@/components/tours";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { getExistingTour, generateTourResponse, createNewTour, type TourType } from '@/utils/actions';
+import { getExistingTour, generateTourResponse, createNewTour, type TourType } from '@/utils/actions/tour-actions';
 import toast from "react-hot-toast";
+import { useAuth } from "@clerk/nextjs";
+import { fetchUserTokensById, subtractTokens } from "@/utils/actions/token-actions";
 
 function NewTour() {
 
     const queryClient = useQueryClient()
+    const { userId } = useAuth()
 
     const { mutate, isPending, data: tour } = useMutation({
         mutationFn: async (destination: TourType) => {
@@ -26,20 +29,42 @@ function NewTour() {
                 }
             };
 
-            const newTour = await generateTourResponse(destination)
-
-            if (newTour) {
-                // Add this new tour to database
-                await createNewTour(newTour.tour);
-
-                // Invalidate the existing query
-                queryClient.invalidateQueries({ queryKey: ['tours'] });
-                
-                return newTour.tour;
+            // get the current user tokens from the database
+            let currentTokens;
+            
+            if (userId) {
+                currentTokens = await fetchUserTokensById(userId);
             }
 
-            toast.error('No matching city found...');
-            return null;
+            // Abort the call to Open AI if the tokens are less than 300
+            if (currentTokens && currentTokens < 300) {
+                toast.error('Token balance too low...')
+                return;
+            }
+
+            // Generate a new tour if there is no existing tour
+            const newTour = await generateTourResponse(destination)
+
+            if (!newTour) {
+                toast.error('No matching city found...');
+                return null;
+            }
+
+            // Add this new tour to database
+            await createNewTour(newTour.tour);
+
+            // Invalidate the existing query
+            queryClient.invalidateQueries({ queryKey: ['tours'] });
+
+            // Calculate the remaining tokens, newTour.tokens are the tokens consumed by the Open AI
+            if (userId && newTour.tokens){
+                const newTokens = await subtractTokens(userId, newTour.tokens)
+                toast.success(`${newTokens} tokens remaining`)
+            }
+
+            return newTour.tour;
+
+
         }
     })
 

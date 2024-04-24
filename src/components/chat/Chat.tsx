@@ -4,7 +4,7 @@
 import { type FormEvent, useState, type ChangeEvent } from "react";
 import { type ChatCompletionMessage } from "openai/resources/index.mjs";
 import { useMutation } from "@tanstack/react-query";
-import { generateChatResponse } from "@/utils/actions";
+import { generateChatResponse } from "@/utils/actions/tour-actions";
 import toast from "react-hot-toast";
 
 
